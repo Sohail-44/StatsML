@@ -118,7 +118,7 @@ ggplot(weather_data, aes(x = Temp3pm, fill = Location)) +
 ```{r}
 # facet_wrap() -- basically splits one plot into smaller sub plots based on similar values in a column 
 ggplot(weather_data, aes(x = Temp9am, y = Temp3pm,color = Humidity9am)) + geom_point() + facet_wrap(~Location) +
-scale_color_gradient(low ="#56B1F7" , high = "#132B43")
+scale_color_gradient(low ="#56B1F7" , high = "#132B43") # for the scale
 
 ```
 
