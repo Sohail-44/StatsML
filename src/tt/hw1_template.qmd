@@ -1,0 +1,214 @@
+---
+title: "Homework 1"
+subtitle: "Stat 253"
+author: "Mohammed Sohail Khan "
+date: 14th Sep 2025
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    embed-resources: true
+    fig-width: 5
+    fig-height: 3
+execute:
+  error: true
+  warning: false
+knitr:
+  opts_chunk:
+    collapse: true
+    message: false
+---
+
+
+# Notes 
+
+(@) Please **update the author name** to your name! 
+(@) This document is for your answers only. Do NOT write out the homework questions in this document. Writing out the questions makes it very challenging to grade the homework. (You can create a separate document for your own records if you wish.) 
+(@) Besides adding your answers/code, please DO NOT make any deletions or changes to the structure of this template! 
+
+
+
+# Setup 
+
+Put any code you need to load packages and load/prep data here. 
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(rattle)
+
+data("weatherAUS")
+glimpse(weatherAUS)
+
+view(weatherAUS)
+```
+
+
+# Exercises
+
+
+
+## Data Context
+
+
+
+## Exercise 1
+
+
+
+### Part a
+filtering 6 rows namely : Hobart, Adelaide, Canberra, Brisbane, Melbourne, and Sydney. 
+Mutating(in this case writing over) temp9am values to be farenheit
+and then selecting the relevant 6 columns
+```{r}
+# I used weather_data dataset as I have created a weather dataset in my other class 
+weather_data <-weatherAUS %>% 
+  filter(Location %in% c("Hobart", "Adelaide", "Canberra", "Brisbane", "Melbourne", "Sydney") ) %>% 
+  mutate(Temp9am = Temp9am *1.8 + 32, Temp3pm = Temp3pm * 1.8 + 32) %>% 
+  select(Temp3pm, Location, WindSpeed9am, Humidity9am, Pressure9am, 
+      Temp9am)
+  
+
+```
+
+```{r}
+# Checking it out
+dim(weather_data)
+head(weather_data)
+```
+
+
+### Part b
+Arranging it in desending order and then looking at top 3 using head function proving 3 as an argument
+
+```{r}
+top_3_hottest <- weather_data %>% 
+  arrange(desc(Temp3pm)) %>% 
+  head(3)
+
+```
+
+```{r}
+# checking it out 
+top_3_hottest
+
+```
+
+### Part c
+```{r}
+temp3pm_6locs <- weather_data %>% 
+  group_by(Location) %>% # makes mini groups of every location and then takes mean of the group  based on temp3pm
+  summarise(mean(Temp3pm, na.rm = TRUE))
+  
+```
+
+```{r}
+# lets check it out 
+temp3pm_6locs
+
+```
+
+
+### Part d
+```{r}
+ggplot(weather_data, aes(x = Temp3pm, fill = Location)) + 
+  geom_density(alpha = 0.5) # alpha adds translucency to see overlap
+  
+```
+```{r}
+# facet_wrap() -- basically splits one plot into smaller sub plots based on similar values in a column 
+ggplot(weather_data, aes(x = Temp9am, y = Temp3pm,color = Humidity9am)) + geom_point() + facet_wrap(~Location) +
+scale_color_gradient(low ="#56B1F7" , high = "#132B43")
+
+```
+
+
+
+### Part e
+
+
+
+## Exercise 2
+
+
+
+### Part a
+
+
+
+### Part b
+
+
+
+### Part c
+
+
+
+### Part d
+
+
+
+### Part e
+
+
+
+### Part f
+
+
+
+## Exercise 3
+
+
+
+### Part a
+
+
+
+### Part b
+
+
+
+### Part c
+
+
+
+## Exercise 4
+
+
+
+### Part a
+
+
+
+### Part b
+
+
+
+### Part c
+
+
+
+### Part d
+
+
+
+### Part e
+
+
+
+## Exercise 5
+
+
+
+## Exercise 6
+
+
+
+
+# Done!
+
+- Render your QMD to HTML.
+- Check that HTML to make sure there are no errors or formatting issues. 
+- Submit the HTML on Moodle.
+
+
