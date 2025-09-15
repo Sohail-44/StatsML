@@ -43,6 +43,94 @@
     ]
   },
   {
+    "objectID": "src/tt/hw1_template.html",
+    "href": "src/tt/hw1_template.html",
+    "title": "Homework 1",
+    "section": "",
+    "text": "Notes",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Homework 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/hw1_template.html#data-context",
+    "href": "src/tt/hw1_template.html#data-context",
+    "title": "Homework 1",
+    "section": "Data Context",
+    "text": "Data Context",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Homework 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/hw1_template.html#exercise-1",
+    "href": "src/tt/hw1_template.html#exercise-1",
+    "title": "Homework 1",
+    "section": "Exercise 1",
+    "text": "Exercise 1\nPart a\nfiltering 6 rows namely : Hobart, Adelaide, Canberra, Brisbane, Melbourne, and Sydney. Mutating(in this case writing over) temp9am values to be farenheit and then selecting the relevant 6 columns\n\nCode# I used weather_data dataset as I have created a weather dataset in my other class \nweather_data &lt;-weatherAUS %&gt;% \n  filter(Location %in% c(\"Hobart\", \"Adelaide\", \"Canberra\", \"Brisbane\", \"Melbourne\", \"Sydney\") ) %&gt;% \n  mutate(Temp9am = Temp9am *1.8 + 32, Temp3pm = Temp3pm * 1.8 + 32) %&gt;% \n  select(Temp3pm, Location, WindSpeed9am, Humidity9am, Pressure9am, \n      Temp9am)\n  \n\n\n\nCode# Checking it out\ndim(weather_data)\n## [1] 26828     6\nhead(weather_data)\n## # A tibble: 6 × 6\n##   Temp3pm Location WindSpeed9am Humidity9am Pressure9am Temp9am\n##     &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;       &lt;int&gt;       &lt;dbl&gt;   &lt;dbl&gt;\n## 1    69.6 Sydney             17          92       1018.    69.3\n## 2    76.6 Sydney              9          83       1018.    72.3\n## 3    73.4 Sydney             17          88       1017.    74.3\n## 4    69.6 Sydney             22          83       1014.    70.5\n## 5    77.9 Sydney             11          88       1008.    72.5\n## 6    78.8 Sydney              9          69       1003.    74.8\n\n\nPart b\nArranging it in desending order and then looking at top 3 using head function proving 3 as an argument\n\nCodetop_3_hottest &lt;- weather_data %&gt;% \n  arrange(desc(Temp3pm)) %&gt;% \n  head(3)\n\n\n\nCode# checking it out \ntop_3_hottest\n## # A tibble: 3 × 6\n##   Temp3pm Location  WindSpeed9am Humidity9am Pressure9am Temp9am\n##     &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;       &lt;int&gt;       &lt;dbl&gt;   &lt;dbl&gt;\n## 1    117. Adelaide            13          14       1008.    96.4\n## 2    114. Melbourne           54          23       1003.    91.6\n## 3    112. Sydney              13          62       1003.    84.0\n\n\nPart c\n\nCodetemp3pm_6locs &lt;- weather_data %&gt;% \n  group_by(Location) %&gt;% # makes mini groups of every location and then takes mean of the group  based on temp3pm\n  summarise(mean(Temp3pm, na.rm = TRUE))\n  \n\n\n\nCode# lets check it out \ntemp3pm_6locs\n## # A tibble: 6 × 2\n##   Location  `mean(Temp3pm, na.rm = TRUE)`\n##   &lt;chr&gt;                             &lt;dbl&gt;\n## 1 Adelaide                           70.8\n## 2 Brisbane                           76.7\n## 3 Canberra                           67.0\n## 4 Hobart                             61.2\n## 5 Melbourne                          66.6\n## 6 Sydney                             70.9\n\n\nPart d\n\nCodeggplot(weather_data, aes(x = Temp3pm, fill = Location)) + \n  geom_density(alpha = 0.5) # alpha adds translucency to see overlap\n\n\n\n\n\n\n\n\nCode# facet_wrap() -- basically splits one plot into smaller sub plots based on similar values in a column \nggplot(weather_data, aes(x = Temp9am, y = Temp3pm,color = Humidity9am)) + geom_point() + facet_wrap(~Location) +\nscale_color_gradient(low =\"#56B1F7\" , high = \"#132B43\") # for the scale\n\n\n\n\n\n\n\nPart e",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Homework 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/hw1_template.html#exercise-2",
+    "href": "src/tt/hw1_template.html#exercise-2",
+    "title": "Homework 1",
+    "section": "Exercise 2",
+    "text": "Exercise 2\nPart a\nPart b\nPart c\nPart d\nPart e\nPart f",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Homework 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/hw1_template.html#exercise-3",
+    "href": "src/tt/hw1_template.html#exercise-3",
+    "title": "Homework 1",
+    "section": "Exercise 3",
+    "text": "Exercise 3\nPart a\nPart b\nPart c",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Homework 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/hw1_template.html#exercise-4",
+    "href": "src/tt/hw1_template.html#exercise-4",
+    "title": "Homework 1",
+    "section": "Exercise 4",
+    "text": "Exercise 4\nPart a\nPart b\nPart c\nPart d\nPart e",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Homework 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/hw1_template.html#exercise-5",
+    "href": "src/tt/hw1_template.html#exercise-5",
+    "title": "Homework 1",
+    "section": "Exercise 5",
+    "text": "Exercise 5",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Homework 1</span>"
+    ]
+  },
+  {
+    "objectID": "src/tt/hw1_template.html#exercise-6",
+    "href": "src/tt/hw1_template.html#exercise-6",
+    "title": "Homework 1",
+    "section": "Exercise 6",
+    "text": "Exercise 6",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Homework 1</span>"
+    ]
+  },
+  {
     "objectID": "src/ica/ica-sample1.html",
     "href": "src/ica/ica-sample1.html",
     "title": "ICA Sample 1",
@@ -50,7 +138,7 @@
     "text": "Add content here",
     "crumbs": [
       "In-Class Activities",
-      "<span class='chapter-number'>4</span>  <span class='chapter-title'>ICA Sample 1</span>"
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>ICA Sample 1</span>"
     ]
   },
   {
@@ -61,7 +149,7 @@
     "text": "Add content here",
     "crumbs": [
       "In-Class Activities",
-      "<span class='chapter-number'>5</span>  <span class='chapter-title'>ICA Sample 2</span>"
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>ICA Sample 2</span>"
     ]
   },
   {
