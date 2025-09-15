@@ -68,11 +68,13 @@ book:
       chapters:
       - src/tt/2025-07-08.qmd
       - src/tt/2025-07-15.qmd
+      - src/tt/hw1_template.qmd
 
     - part: "In-Class Activities"
       chapters:
       - src/ica/ica-sample1.qmd
       - src/ica/ica-sample2.qmd
+      
 
 
   appendices:
