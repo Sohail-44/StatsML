@@ -127,7 +127,7 @@ scale_color_gradient(low = "#132B43", high = "#56B1F7")
 ### Part e ( re-interpret the b part)
 Interpretation : Part-d (a) --- We're comparing 3pm temperature of the 6 cities and its variability(how much its varying). Brisbane's afternoons seems to be in general little hotter relative to other cities as its skewed towards right, higher temp. Similarly Canberra's afternoons seems pretty cool relative to other cities as its skewed towards left. Apart from the extremes, Hobart, Adeliade and Melbourne seems to have overlap and similar temps more skewed towards cold and sydney seems to have most mid-range temperature of them all. 
 
-Interpretation : Part-d (b) --- In this facet's scatter plot, we're comparing humidity of 9 am for different cities.                                                #We can see that Adeliade show's lower humidity at 9 am when temperatures of 9am and temperatur of 3pm are hotter. So if morning in Adelaide starts warmer and stays warmer till after, then humidity 9 am,  with certain probablity will be lower. Canberra, Hobart, Melbourne, Canberra and Syndey shows somewehat stable humidity at 9 am with very minor fluctuations when morning temperature and afternoon temperature increases.
+Interpretation : Part-d (b) --- In this facet's scatter plot, we're comparing humidity of 9 am for different cities. We can see that Adelaide show's lower humidity at 9 am when temperatures of 9am and temperatur of 3pm are hotter. So if morning in Adelaide starts warmer and stays warmer till after, then humidity 9 am,  with certain probablity will be lower. Canberra, Hobart, Melbourne, Canberra and Syndey shows somewehat stable humidity at 9 am with very minor fluctuations when morning temperature and afternoon temperature increases.
 
 
 
@@ -230,25 +230,83 @@ weather_model_2 %>%
 
 ```
 ```{r}
-# creating the residual plot for 
+# creating the residual plot for weather_model_2
 weather_model_2%>% 
   augment(new_data = weather_data) %>% 
   ggplot(aes(x = .pred, y = .resid)) +
   geom_point() + 
   geom_hline(yintercept = 0)
 ```
+```{r}
+# Looking for R^2 for weather_model2 
+weather_model_2 %>% 
+  glance()
+```
+```{r}
+# checking for accuracy 
+weather_model_2 %>% 
+  augment(new_data = weather_data) %>% 
+  summarise(mae = mean(abs(.resid), na.rm = TRUE))
 
-
+```
 
 ### Part a
 
+```{r}
+# Conducting the 10 fold cross validation on model_1 
+set.seed(253)
+weather_model_1_cv <- lm_spec %>% 
+  fit_resamples(Temp3pm ~ Temp9am + Location + Pressure9am, 
+  resamples = vfold_cv(weather_data, v = 10),
+  metrics = metric_set(mae, rsq)
+)
+
+weather_model_1_cv %>% 
+  collect_metrics()
+  
+
+```
+
+
+```{r}
+set.seed(253)
+weather_model_2_cv <- lm_spec %>% 
+  fit_resamples(Temp3pm ~ Temp9am + Location + Pressure9am+ Humidity9am+ WindSpeed9am, 
+  resamples = vfold_cv(weather_data, v = 10),
+  metrics = metric_set(mae, rsq)
+)
+
+weather_model_2_cv %>% 
+  collect_metrics()
+```
+ Lets check fold by fold to see if there's any overfitting, just to be sure before comparing.
+
+```{r}
+# model 1 fold by fold cv
+weather_model_1_cv %>% 
+  unnest(.metrics) %>% 
+  filter(.metric == "mae")
+```
+
+```{r}
+weather_model_2_cv %>% 
+  unnest(.metrics) %>% 
+  filter(.metric == "mae")
+```
+
+
+Okay, so as per the each fold's mae's of both weather_model_1 and  weather_model_2 shows no overfitting as there's no extreme fluctuations which shows that both models are generalizing well to unseen data. Comparatively, based on CV metrics weather_model_2 is better in predicting for 3pm temperatures as it has lower MAE of 4.12 than weather_model_1's 4.24 MAE and higher R^2 of 0.768 than weather_model_1's 0.756.
 
 
 ### Part b
 
+It's better to compare two models using cross validation than in-sample metrics as it can inform us of any overfitting in models based each folds' mae's which could potentially help us to remove the overfitting model as it would not provide better predictions based on new data. 
+
 
 
 ### Part c
+
+Since creating the folds is random every time we run the code so data is randomly is randomly split, so we set the seed so that data in split is fixed as this helps us with reproducing the same splits everytime so that even if we sharing our code to others or debugging it shows the same results everytime when others run it. 
 
 
 
