@@ -127,8 +127,7 @@ scale_color_gradient(low = "#132B43", high = "#56B1F7")
 ### Part e ( re-interpret the b part)
 Interpretation : Part-d (a) --- We're comparing 3pm temperature of the 6 cities and its variability(how much its varying). Brisbane's afternoons seems to be in general little hotter relative to other cities as its skewed towards right, higher temp. Similarly Canberra's afternoons seems pretty cool relative to other cities as its skewed towards left. Apart from the extremes, Hobart, Adeliade and Melbourne seems to have overlap and similar temps more skewed towards cold and sydney seems to have most mid-range temperature of them all. 
 
-Interpretation : Part-d (b) --- In this facet's scatter plot, we're comparing humidity of 9 am for different cities. We can see that Adelaide show's lower humidity at 9 am when temperatures of 9am and temperatur of 3pm are hotter. So if morning in Adelaide starts warmer and stays warmer till after, then humidity 9 am,  with certain probablity will be lower. Canberra, Hobart, Melbourne, Canberra and Syndey shows somewehat stable humidity at 9 am with very minor fluctuations when morning temperature and afternoon temperature increases.
-
+Interpretation : Part-d (b) --- In this facet's scatter plot, we're comparing humidity of 9 am for different cities. We can see that Adelaide show's linearly decreasing humidity at 9 am when temperatures of 9am and temperatur of 3pm are hotter. So if morning in Adelaide starts warmer and stays warmer till after, then humidity at 9 am,  with certain probablity will be lower. Canberra, Hobart, Melbourne, Canberra and Syndey shows stable higher humidty at 9am, and in all of them at the peak warmer tempertures, humidity seems to drop a bit.
 
 
 ## Exercise 2
@@ -312,35 +311,163 @@ Since creating the folds is random every time we run the code so data is randoml
 
 ## Exercise 4
 
+```{r}
+melbourne <- read.csv('https://mac-stat.github.io/data/weather_melbourne.csv')
+view(melbourne)
+```
+
+# I'm just fitting the models as I don't have go back and forth too much
+```{r}
+# Fitting the model_1 
+temp_model_1 <- lm_spec %>% 
+  fit(Humidity3pm ~ Temp9am + Humidity9am, data = melbourne)
+
+temp_model_1 %>%
+  tidy()
+```
+
+```{r}
+# Predict the 3pm humidity when at 9am it is 15 degrees (C) with 75% humidity 
+temp_model_1 %>% 
+  predict(new_data = data.frame(Temp9am = 15, Humidity9am = 75))
+```
 
 
 ### Part a
+```{r}
+temp_model_2 <- lm_spec %>% 
+  fit(Humidity3pm ~ Temp9amF + Humidity9am, data = melbourne)
+```
+
+1. yes, the temp9amF of temp_model_2 will differ from temp9am of temp_model_2.
+2. Yes, p-values will may differ slightly
+3. yes, slightly
+4. No, I think it will be produce different result
+
 
 
 
 ### Part b
+```{r}
+# Checking if my intuition was correct or not? 
+temp_model_1 %>% 
+  tidy()
 
+```
+
+```{r}
+temp_model_2 %>% 
+  tidy()
+
+```
+
+```{r}
+temp_model_2 %>% 
+  predict(new_data = data.frame(Temp9amF = 15, Humidity9am = 75))
+
+```
+
+- Okay my intuition was incorrect for P values and humidity9am coefficient, as I didnt think they'd be the same, but turned out they are same. And additionally even after scaling different, it didn't seem to change much.
 
 
 ### Part c
-
+No, I think predictor scaling it does not impact overall conclusions as much in linear regression modes. 
 
 
 ### Part d
+```{r}
+library(mice)
+data(mammalsleep)
+mammalsleep <- mammalsleep %>% 
+  filter(brw > 1) %>% 
+  mutate(log_brw = log(brw)) 
+
+```
+
+```{r}
+# with brw
+
+# brw density
+mammalsleep %>% 
+  ggplot(aes(x= brw)) + geom_density()
+
+# gt vs brw
+mammalsleep %>% 
+  ggplot(aes(x = gt, y = brw)) + geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)  # false coz I don't want the shade
 
 
+# .pred vs .resid ( fitting the model and plotting residual plot)
+mammal_gt_brw_model <- lm_spec %>% 
+  fit(brw ~ gt, data = mammalsleep) %>% 
+  tidy()
+
+mammal_gt_brw_model%>% 
+  augment(new_data = mammalsleep) %>% 
+  ggplot(aes(x = .pred, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0)
+
+
+
+```
+
+
+```{r}
+# with log_brw
+
+# log_brw density
+mammalsleep %>% 
+  ggplot(aes(x= log_brw)) + geom_density()
+
+# gt vs log_brw
+mammalsleep %>% 
+  ggplot(aes(x = gt, y = log_brw)) + geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)  # false coz I don't want the shade
+
+
+# .pred vs .resid ( fitting the model and plotting residual plot)
+mammal_gt_log_brw_model <- lm_spec %>% 
+  fit(log_brw ~ gt, data = mammalsleep)
+
+
+mammal_gt_log_brw_model%>% 
+  augment(new_data = mammalsleep) %>% 
+  ggplot(aes(x = .pred, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0)
+
+```
+- The log transformations have changed the overall skewness and spread of the brw, as in the density plot of log_brw it shows that less skew and distrubution of the data seems better as its curved and does not show spikes.
+
+- I think the log_brw does fix the model as in the brw residual there's clear heterokedaticity where in the log_brw data points seems more randomly scattered without any pattern or shape. So, I think since log_brw makes resiuals look more random or spread so linearity and the variance of errors basically fit the Linear regression assumptions, therefore log_brw does fix our model.
 
 ### Part e
 
+```{r}
+# interpreting b1 coefficient of log of log_brw
+mammal_gt_log_brw_model %>% 
+  tidy()
 
+
+```
+Since the model is now in log scale, instead of brw increasing, it multiplies. So in that case, I think the intepretation for gt of log_brw is : For every additional day of gestation, the expected brain wieght will multiply by 1.0114% (e^0.01127) per day. 
 
 ## Exercise 5
+Resources I used to complete the HW assignment : 
+- Stat 253 Website 
+- In class activities
+- perplexity to basically ask for r syntax for ggplot 
 
-
+For me, actually the Stat 253 website was super helpful, and also going through and doing the actvities did help me lot as it made the hw much similar to what we did it class. 
 
 ## Exercise 6
 
+- For me changing datasets, and fitting different models was a little challanging as it was hectic but it helped me a ot in getting familiar with the process. 
+- I really started feeling better after going through website content, it explained it very well and I just had to apply my reasoning to the models I'm buidling. 
+- I started the hw late on Wednesday, beacause I was busy with some other stuff, I did review the material before starting but not throughly but while I was doing thw HW I reviewed it throughly. I did not work with anyone and did not ask questions in OH or Slack.
 
+In the future I think it will be better if I start early and take some help from preceptors. 
 
 
 # Done!
