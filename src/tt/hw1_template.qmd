@@ -112,51 +112,131 @@ temp3pm_6locs
 ### Part d
 ```{r}
 ggplot(weather_data, aes(x = Temp3pm, fill = Location)) + 
-  geom_density(alpha = 0.5) # alpha adds translucency to see overlap
+  geom_density(alpha = 0.6) # alpha adds translucency to see overlap
   
 ```
 ```{r}
 # facet_wrap() -- basically splits one plot into smaller sub plots based on similar values in a column 
-ggplot(weather_data, aes(x = Temp9am, y = Temp3pm,color = Humidity9am)) + geom_point() + facet_wrap(~Location) +
-scale_color_gradient(low ="#56B1F7" , high = "#132B43") # for the scale
+ggplot(weather_data, aes(x = Temp9am, y = Temp3pm, color = Humidity9am)) + geom_point() + facet_wrap(~Location) +
+scale_color_gradient(low = "#132B43", high = "#56B1F7")  
 
 ```
 
 
 
-### Part e
+### Part e ( re-interpret the b part)
+Interpretation : Part-d (a) --- We're comparing 3pm temperature of the 6 cities and its variability(how much its varying). Brisbane's afternoons seems to be in general little hotter relative to other cities as its skewed towards right, higher temp. Similarly Canberra's afternoons seems pretty cool relative to other cities as its skewed towards left. Apart from the extremes, Hobart, Adeliade and Melbourne seems to have overlap and similar temps more skewed towards cold and sydney seems to have most mid-range temperature of them all. 
+
+Interpretation : Part-d (b) --- In this facet's scatter plot, we're comparing humidity of 9 am for different cities.                                                #We can see that Adeliade show's lower humidity at 9 am when temperatures of 9am and temperatur of 3pm are hotter. So if morning in Adelaide starts warmer and stays warmer till after, then humidity 9 am,  with certain probablity will be lower. Canberra, Hobart, Melbourne, Canberra and Syndey shows somewehat stable humidity at 9 am with very minor fluctuations when morning temperature and afternoon temperature increases.
 
 
 
 ## Exercise 2
 
 
-
 ### Part a
+```{r}
+# Specifying the model
+lm_spec <- linear_reg() |> 
+  set_mode("regression") |> 
+  set_engine("lm")
 
+# checking it out
+lm_spec
+```
+```{r}
+# fitting the model
+weather_model_1 <-lm_spec |> 
+  fit(Temp3pm ~ Temp9am + Location + Pressure9am, data = weather_data)
 
+```
 
-### Part b
+```{r}
+# checking it out 
+weather_model_1 |> 
+  tidy()
+
+```
+
+### Part b]
+```{r}
+# Obtaining the predictions + residuals with augment function as it gives both preidctions and residuals for every row
+weather_model_1 %>% 
+  augment(new_data = weather_data) %>% 
+  head(10)
+
+```
+```{r}
+# creating the residual plot for weather model 1 
+weather_model_1 %>% 
+  augment(new_data = weather_data) %>% 
+  ggplot(aes(x = .pred, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0) # coz we want to see where our prediction values fall - below or above our redsiual
+
+```
+It looks like the model is random, I don't see any particular shape/ pattern like a slope or parabolo etc.This shows that the model is correct.The points seem to be heavily scattered in the middle than tails and there seems to some be outliers but not strong enough to make our model incorrect.
 
 
 
 ### Part c
-
+```{r}
+# getting the metric to evaluate the model's strength
+weather_model_1 %>% 
+  glance()
+```
+The weather_model_1 seems strong as indicated by high R^2 of 0.75687. So the predictor variables : temperature at 9am, Location and pressure at 9am explains approximately 76% of variability in our response varaible : temperature at 3pm. Although it's not very strong as roughly 24% of variability is still not explained, but in general it seems strong.  
 
 
 ### Part d
 
+```{r}
+# cheking the accuracy -- how far my predictions are off 
+weather_model_1 %>% 
+  augment(new_data = weather_data) %>% 
+  summarise(mae = mean(abs(.resid), na.rm = TRUE)) # had to remove the missing values as it was giving mae as na
+```
+The mean absolute error is roughly 4, which means that the predictions are off by 4 degrees F for 3pm temperatures,  relative to the scale of the data, which range from 40 degrees F to 120 degress F for 3pm. So being 4 degrees F of in range of  80 degrees F (120-40), is 5% (4/80*100). Therefore, the model is 5% off, which means its statistically 95% accourate. 
 
 
 ### Part e
+Evaluating fairness : 
+a. This data comes from Australian Commonwealth Bureau of Meteorology which I belive is responsible for providing statitistically efficient predictions and correct meteorological updates to the Austrialian people. In our case, predicting 3pm temperatures, could help people in general stay safe or plan trips. For Businesses, it could them plan their business accordingly, in specific it might help ice cream businesses, tourist businesses, ridesharing businesses etc as they can plan their business according to temperatue. So, It definitely benefits the Australian people.
 
+Since, this data was collected/recorded by taking temperatures, windspeed, pressure change, etc I don't think it involved any animal testing or human testing etc which would have raised ethical concerns, so I think most probably no body was harmed. For our case, predicting 3pm temp, I can't think of anything that could harm anyone. 
 
 
 ### Part f
 
+Temp9am coefficient interpretation : When controlling for location and pressure at 9am, we expect 3pm temperatures to roughly increase by 0.95 degree F for every 1 degree F increase in 9am temperature. 
 
+LocationHobart interpretation : When controlling for temperature at 9am, pressure at 9 am other locations, we expect temperature at 3pm in Hobart to be 1.29 degrees F lower than Adelaide on average. ( Adelaide is our reference variable)
 
 ## Exercise 3
+```{r}
+# Fitting Weather_model_2 with all predictor variables
+weather_model_2 <- lm_spec %>% 
+   fit(Temp3pm ~ Temp9am + Location + Pressure9am + WindSpeed9am + Humidity9am, data = weather_data)
+
+weather_model_2 %>% 
+  tidy()
+
+```
+```{r}
+# Obtaining prediction and residuals for weather_model_2
+weather_model_2 %>% 
+  augment(new_data = weather_data) %>% 
+  head(10)
+
+```
+```{r}
+# creating the residual plot for 
+weather_model_2%>% 
+  augment(new_data = weather_data) %>% 
+  ggplot(aes(x = .pred, y = .resid)) +
+  geom_point() + 
+  geom_hline(yintercept = 0)
+```
 
 
 
